@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
+  import.meta.env.VITE_SUPABASE_URL ?? 'https://jbuwvbjjjrhwbszanpma.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpidXd2YmpqanJod2JzemFucG1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTUyMjIsImV4cCI6MjA3MDQ5MTIyMn0.ZbaYFUy7ew84YDMJJHtSoKBgfH2eopUcpMV-3EPJEXc'
 );
 
 const App = () => {
