@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import confetti from 'canvas-confetti';
 import {
   Users,
   ShieldCheck,
@@ -9,6 +10,7 @@ import {
   Brain,
   Star,
   Lock,
+  PartyPopper,
 } from 'lucide-react';
 
 const supabase = createClient(
@@ -16,10 +18,38 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpidXd2YmpqanJod2JzemFucG1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTUyMjIsImV4cCI6MjA3MDQ5MTIyMn0.ZbaYFUy7ew84YDMJJHtSoKBgfH2eopUcpMV-3EPJEXc'
 );
 
+const MILESTONES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+
+function fireCelebration() {
+  const duration = 4000;
+  const end = Date.now() + duration;
+  const colors = ['#E91E63', '#f472b6', '#fbbf24', '#34d399', '#60a5fa'];
+
+  const frame = () => {
+    confetti({
+      particleCount: 6,
+      angle: 60,
+      spread: 70,
+      origin: { x: 0 },
+      colors,
+    });
+    confetti({
+      particleCount: 6,
+      angle: 120,
+      spread: 70,
+      origin: { x: 1 },
+      colors,
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  };
+  frame();
+}
+
 const App = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [milestone, setMilestone] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     email: '',
@@ -30,6 +60,12 @@ const App = () => {
     location: '',
     biggestHurdleText: '',
   });
+
+  useEffect(() => {
+    if (submitted && milestone) {
+      fireCelebration();
+    }
+  }, [submitted, milestone]);
 
   const handleWhatsAppShare = () => {
     const shareMessage = encodeURIComponent(
@@ -55,14 +91,19 @@ const App = () => {
       source: 'web_waitlist',
     });
 
-    setLoading(false);
-
     if (insertError) {
       console.error('Submission error:', insertError);
       setError('Something went wrong. Please try again or check your connection.');
+      setLoading(false);
       return;
     }
 
+    // Check if we just hit a milestone
+    const { data: countData } = await supabase.rpc('get_waitlist_count');
+    const hit = MILESTONES.find((m) => m === countData);
+    setMilestone(hit ?? null);
+
+    setLoading(false);
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -71,14 +112,34 @@ const App = () => {
     return (
       <div className="min-h-screen bg-[#FDF8F9] flex items-center justify-center p-6 font-sans">
         <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-pink-100 p-10 text-center border border-pink-50">
-          <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-green-100">
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
-          </div>
-          <h2 className="text-3xl font-black text-slate-900 mb-4">You're in the Village!</h2>
-          <p className="text-slate-600 mb-8 leading-relaxed text-lg">
-            Thank you for joining, {formData.firstName}! You are now on the list for early access.
-            I look forward to building this future with you.
-          </p>
+
+          {milestone ? (
+            <>
+              <div className="w-24 h-24 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-yellow-100">
+                <PartyPopper className="w-12 h-12 text-yellow-500" />
+              </div>
+              <div className="inline-block px-4 py-1 rounded-full bg-pink-50 text-pink-600 text-xs font-black uppercase tracking-widest mb-4">
+                Milestone Unlocked 🎉
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-3">
+                We just hit {milestone} signups!
+              </h2>
+              <p className="text-slate-600 mb-8 leading-relaxed text-lg">
+                You made it happen, {formData.firstName}! You are signup #{milestone} — the village is growing!
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-green-100">
+                <CheckCircle2 className="w-12 h-12 text-green-500" />
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-4">You're in the Village!</h2>
+              <p className="text-slate-600 mb-8 leading-relaxed text-lg">
+                Thank you for joining, {formData.firstName}! You are now on the list for early access.
+                I look forward to building this future with you.
+              </p>
+            </>
+          )}
 
           <div className="space-y-4 mb-8">
             <button
@@ -96,13 +157,8 @@ const App = () => {
           <button
             onClick={() => {
               setSubmitted(false);
-              setFormData({
-                ...formData,
-                firstName: '',
-                email: '',
-                whatsapp: '',
-                biggestHurdleText: '',
-              });
+              setMilestone(null);
+              setFormData({ ...formData, firstName: '', email: '', whatsapp: '', biggestHurdleText: '' });
             }}
             className="w-full py-4 text-slate-400 font-bold hover:text-pink-600 transition-all text-sm"
           >
@@ -178,9 +234,7 @@ const App = () => {
                 </div>
                 <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur p-6 rounded-2xl border border-slate-100 shadow-lg">
                   <p className="font-black text-slate-900">Yetty Williams</p>
-                  <p className="text-xs text-slate-500 italic">
-                    Author of "Digital Savvy Parenting"
-                  </p>
+                  <p className="text-xs text-slate-500 italic">Author of "Digital Savvy Parenting"</p>
                 </div>
               </div>
             </div>

@@ -30,11 +30,11 @@ Use `execute_sql` for any table/data changes. Apply immediately.
 | "Add a new hurdle option" | The hurdle array in the form |
 | "Change the footer text" | Footer `<p>` |
 
-## Welcome email
-Sent automatically via Supabase Edge Function `send-welcome-email` on every signup.
-- Trigger: `on_waitlist_signup` on `waitlist_entries` INSERT
-- Email service: Resend (`RESEND_API_KEY` secret in Supabase)
-- To change the email text: edit the `html` string in the edge function via Supabase dashboard → Edge Functions
+## Confetti milestones
+Fires on signup #100, 200, 300 … 1000. Logic in `App.jsx`:
+- After insert, calls Supabase RPC `get_waitlist_count()`
+- If count matches a milestone, shows special screen + confetti burst
+- To add/change milestones: edit the `MILESTONES` array near the top of `App.jsx`
 
 ## Colours
 - Pink (brand): `#E91E63`
