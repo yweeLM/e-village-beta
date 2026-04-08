@@ -30,6 +30,12 @@ Use `execute_sql` for any table/data changes. Apply immediately.
 | "Add a new hurdle option" | The hurdle array in the form |
 | "Change the footer text" | Footer `<p>` |
 
+## Welcome email
+Sent automatically via Supabase Edge Function `send-welcome-email` on every signup.
+- Trigger: `on_waitlist_signup` on `waitlist_entries` INSERT
+- Email service: Resend (`RESEND_API_KEY` secret in Supabase)
+- To change the email text: edit the `html` string in the edge function via Supabase dashboard → Edge Functions
+
 ## Colours
 - Pink (brand): `#E91E63`
 - Dark: `slate-900`
