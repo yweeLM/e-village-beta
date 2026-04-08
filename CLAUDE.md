@@ -1,5 +1,16 @@
 # E-Village — Claude Instructions
 
+## How to finish every response
+Always end with the word **"Done."** on its own line so Yetty knows the task is complete.
+
+## When Yetty has to do something manually
+If a step requires her to do something herself (e.g. click something in a website):
+- Number the steps clearly (1, 2, 3…)
+- Use plain English — no jargon
+- Say exactly where to click, what to type, and what to look for
+- Keep it as short as possible while still being accurate
+- If there is a URL she needs to visit, include it
+
 ## Deploy automatically
 After every change: commit → push to `main` → done.
 Vercel picks up `main` and redeploys automatically.
@@ -13,7 +24,7 @@ Use `execute_sql` for any table/data changes. Apply immediately.
 - Push to `main` always (never a feature branch)
 - One commit per session, clear message
 - Apply Supabase changes before pushing code
-- Never explain git or deployments to the user unless asked
+- Never explain git or deployments to Yetty unless asked
 
 ## Site structure (src/App.jsx)
 - **Nav** — logo + "Join Waitlist" button
