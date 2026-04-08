@@ -1,13 +1,5 @@
-/* global __firebase_config, __app_id, __initial_auth_token */
-import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  signInWithCustomToken,
-  signInAnonymously,
-  onAuthStateChanged,
-} from 'firebase/auth';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import {
   Users,
   ShieldCheck,
@@ -19,29 +11,12 @@ import {
   Lock,
 } from 'lucide-react';
 
-// Firebase config: supports canvas globals or VITE_ env vars for Vercel
-const firebaseConfig =
-  typeof __firebase_config !== 'undefined'
-    ? JSON.parse(__firebase_config)
-    : {
-        apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-        authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-        storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-        messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-        appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-      };
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId =
-  typeof __app_id !== 'undefined'
-    ? __app_id
-    : import.meta.env.VITE_APP_ID || 'dsp-waitlist-v1';
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 const App = () => {
-  const [user, setUser] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -56,24 +31,6 @@ const App = () => {
     biggestHurdleText: '',
   });
 
-  // Handle Authentication
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (err) {
-        console.error('Auth error:', err);
-      }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return () => unsubscribe();
-  }, []);
-
   const handleWhatsAppShare = () => {
     const shareMessage = encodeURIComponent(
       `I just joined the E-Village waitlist for Digital Savvy Parenting! 🛡️📱 It's a new AI-powered portal by Yetty Williams to help us protect our kids from digital risks and lead them with confidence. Join the village here: ${window.location.href}`
@@ -83,39 +40,31 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) {
-      setError('Please wait a moment for the secure connection to establish.');
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
-    try {
-      const waitlistCollection = collection(
-        db,
-        'artifacts',
-        appId,
-        'public',
-        'data',
-        'waitlist_entries'
-      );
+    const { error: insertError } = await supabase.from('waitlist_entries').insert({
+      first_name: formData.firstName,
+      email: formData.email,
+      whatsapp: formData.whatsapp,
+      hurdle: formData.hurdle,
+      confidence: formData.confidence,
+      age_range: formData.ageRange,
+      location: formData.location,
+      biggest_hurdle_text: formData.biggestHurdleText,
+      source: 'web_waitlist',
+    });
 
-      await addDoc(waitlistCollection, {
-        ...formData,
-        userId: user.uid,
-        timestamp: serverTimestamp(),
-        source: 'web_waitlist',
-      });
+    setLoading(false);
 
-      setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (err) {
-      console.error('Submission error:', err);
+    if (insertError) {
+      console.error('Submission error:', insertError);
       setError('Something went wrong. Please try again or check your connection.');
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (submitted) {
@@ -282,7 +231,6 @@ const App = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-10">
-            {/* Contact Details */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700 ml-1">First Name</label>
@@ -309,9 +257,7 @@ const App = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">
-                WhatsApp (Optional)
-              </label>
+              <label className="text-sm font-bold text-slate-700 ml-1">WhatsApp (Optional)</label>
               <div className="relative">
                 <MessageCircle className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                 <input
