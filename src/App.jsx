@@ -24,12 +24,12 @@ const supabase = createClient(
 const MILESTONES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 const BRAND = '#6929C3';   // DSP purple
 const PINK  = '#E91E6E';   // DSP pink
-const BLUE  = '#5B8DE6';   // DSP blue
+const TEAL  = '#4EC9B0';   // DSP mint teal (Savvy)
 
 function fireCelebration() {
   const duration = 4000;
   const end = Date.now() + duration;
-  const colors = [BRAND, PINK, BLUE, '#fbbf24', '#34d399'];
+  const colors = [BRAND, PINK, TEAL, '#fbbf24', '#34d399'];
   const frame = () => {
     confetti({ particleCount: 6, angle: 60, spread: 70, origin: { x: 0 }, colors });
     confetti({ particleCount: 6, angle: 120, spread: 70, origin: { x: 1 }, colors });
@@ -164,7 +164,7 @@ const App = () => {
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
               <div className="w-5 h-5 rounded-md flex items-center justify-center text-white font-black text-[10px]" style={{ backgroundColor: BRAND }}>E</div>
-              <div className="w-5 h-5 rounded-md flex items-center justify-center text-white font-black text-[10px]" style={{ backgroundColor: BLUE }}>V</div>
+              <div className="w-5 h-5 rounded-md flex items-center justify-center text-white font-black text-[10px]" style={{ backgroundColor: TEAL }}>V</div>
             </div>
             <span className="font-black text-xl tracking-tight uppercase hidden sm:block text-slate-900">
               E-Village
@@ -235,10 +235,10 @@ const App = () => {
                 accent: BRAND,
               },
               {
-                icon: <ShieldCheck className="w-8 h-8" style={{ color: BLUE }} />,
+                icon: <ShieldCheck className="w-8 h-8" style={{ color: TEAL }} />,
                 title: 'AI Deepfakes & Safety',
                 desc: 'Cyberbullying, identity threats, and AI-generated harmful content.',
-                accent: BLUE,
+                accent: TEAL,
               },
               {
                 icon: <Zap className="w-8 h-8" style={{ color: PINK }} />,
