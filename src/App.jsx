@@ -11,6 +11,9 @@ import {
   Star,
   Lock,
   PartyPopper,
+  Zap,
+  Globe,
+  Award,
 } from 'lucide-react';
 
 const supabase = createClient(
@@ -19,27 +22,15 @@ const supabase = createClient(
 );
 
 const MILESTONES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+const BRAND = '#7C3AED';
 
 function fireCelebration() {
   const duration = 4000;
   const end = Date.now() + duration;
-  const colors = ['#E91E63', '#f472b6', '#fbbf24', '#34d399', '#60a5fa'];
-
+  const colors = [BRAND, '#a78bfa', '#fbbf24', '#34d399', '#60a5fa'];
   const frame = () => {
-    confetti({
-      particleCount: 6,
-      angle: 60,
-      spread: 70,
-      origin: { x: 0 },
-      colors,
-    });
-    confetti({
-      particleCount: 6,
-      angle: 120,
-      spread: 70,
-      origin: { x: 1 },
-      colors,
-    });
+    confetti({ particleCount: 6, angle: 60, spread: 70, origin: { x: 0 }, colors });
+    confetti({ particleCount: 6, angle: 120, spread: 70, origin: { x: 1 }, colors });
     if (Date.now() < end) requestAnimationFrame(frame);
   };
   frame();
@@ -62,9 +53,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    if (submitted && milestone) {
-      fireCelebration();
-    }
+    if (submitted && milestone) fireCelebration();
   }, [submitted, milestone]);
 
   const handleWhatsAppShare = () => {
@@ -98,11 +87,9 @@ const App = () => {
       return;
     }
 
-    // Check if we just hit a milestone
     const { data: countData } = await supabase.rpc('get_waitlist_count');
     const hit = MILESTONES.find((m) => m === countData);
     setMilestone(hit ?? null);
-
     setLoading(false);
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -110,15 +97,14 @@ const App = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#FDF8F9] flex items-center justify-center p-6 font-sans">
-        <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-pink-100 p-10 text-center border border-pink-50">
-
+      <div className="min-h-screen bg-violet-50 flex items-center justify-center p-6 font-sans">
+        <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-violet-100 p-10 text-center border border-violet-50">
           {milestone ? (
             <>
               <div className="w-24 h-24 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-yellow-100">
                 <PartyPopper className="w-12 h-12 text-yellow-500" />
               </div>
-              <div className="inline-block px-4 py-1 rounded-full bg-pink-50 text-pink-600 text-xs font-black uppercase tracking-widest mb-4">
+              <div className="inline-block px-4 py-1 rounded-full bg-violet-50 text-violet-700 text-xs font-black uppercase tracking-widest mb-4">
                 Milestone Unlocked 🎉
               </div>
               <h2 className="text-3xl font-black text-slate-900 mb-3">
@@ -140,7 +126,6 @@ const App = () => {
               </p>
             </>
           )}
-
           <div className="space-y-4 mb-8">
             <button
               onClick={handleWhatsAppShare}
@@ -153,14 +138,13 @@ const App = () => {
               Help us grow the safety net
             </p>
           </div>
-
           <button
             onClick={() => {
               setSubmitted(false);
               setMilestone(null);
               setFormData({ ...formData, firstName: '', email: '', whatsapp: '', biggestHurdleText: '' });
             }}
-            className="w-full py-4 text-slate-400 font-bold hover:text-pink-600 transition-all text-sm"
+            className="w-full py-4 text-slate-400 font-bold hover:text-violet-600 transition-all text-sm"
           >
             Back to Home
           </button>
@@ -170,12 +154,13 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-pink-100">
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-violet-100">
+
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#E91E63] rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-pink-200">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-violet-200" style={{ backgroundColor: BRAND }}>
               EV
             </div>
             <span className="font-black text-xl tracking-tight uppercase hidden sm:block text-slate-900">
@@ -184,7 +169,8 @@ const App = () => {
           </div>
           <a
             href="#waitlist-form"
-            className="bg-slate-900 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-[#E91E63] transition-all shadow-lg shadow-slate-200"
+            className="text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg"
+            style={{ backgroundColor: BRAND }}
           >
             Join Waitlist
           </a>
@@ -194,74 +180,132 @@ const App = () => {
       {/* Hero */}
       <section className="relative overflow-hidden pt-16 pb-24 md:pt-24 md:pb-32">
         <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 text-slate-600 text-xs font-black uppercase tracking-widest mb-8 border border-slate-100">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-50 text-violet-700 text-xs font-black uppercase tracking-widest mb-8 border border-violet-100">
             <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
             Empowering Families Globally
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight text-slate-900 mb-8 leading-[1.1]">
-            It takes an <span className="text-[#E91E63]">E-Village</span> <br />
+            It takes an{' '}
+            <span style={{ color: BRAND }}>E-Village</span>
+            <br />
             to raise a child today.
           </h1>
           <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-10">
-            Reclaim your influence and lead your family into the digital age with confidence using
-            our new real-time parenting portal.
+            Your child's digital world doesn't come with a manual. <strong>The E-Village does.</strong>
           </p>
           <a
             href="#waitlist-form"
-            className="inline-block px-10 py-5 bg-[#E91E63] text-white rounded-3xl font-black text-lg hover:scale-105 transition-all shadow-2xl shadow-pink-200"
+            className="inline-block px-10 py-5 text-white rounded-3xl font-black text-lg hover:scale-105 transition-all shadow-2xl shadow-violet-200"
+            style={{ backgroundColor: BRAND }}
           >
             Secure Early Access
           </a>
         </div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none -z-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-pink-100 rounded-full blur-[100px] opacity-30"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-50 rounded-full blur-[120px] opacity-30"></div>
+          <div className="absolute top-20 left-10 w-64 h-64 bg-violet-100 rounded-full blur-[100px] opacity-40"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-50 rounded-full blur-[120px] opacity-40"></div>
+        </div>
+      </section>
+
+      {/* What is E-Village */}
+      <section className="py-24 bg-violet-50">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h3 className="font-black tracking-widest uppercase text-sm mb-4" style={{ color: BRAND }}>
+            What is the E-Village?
+          </h3>
+          <h2 className="text-4xl font-black text-slate-900 leading-tight mb-8">
+            A Digital Parenting Portal built for the real world.
+          </h2>
+          <p className="text-lg text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
+            The E-Village is a first-of-its-kind, intelligent support system designed to act as a
+            safety net and partner for your family. Unlike generic parental controls, this portal
+            uses advanced technology to analyse your family's unique needs and considers your child's
+            age to deliver personalised, real-time action plans to navigate the digital world with
+            confidence.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <Brain className="w-8 h-8" style={{ color: BRAND }} />,
+                title: 'Social Media Addiction',
+                desc: 'Screen time battles and withdrawal from real-world connection.',
+              },
+              {
+                icon: <ShieldCheck className="w-8 h-8" style={{ color: BRAND }} />,
+                title: 'AI Deepfakes & Safety',
+                desc: 'Cyberbullying, identity threats, and AI-generated harmful content.',
+              },
+              {
+                icon: <Zap className="w-8 h-8" style={{ color: BRAND }} />,
+                title: 'Harmful Exposure',
+                desc: 'Real-time action plans when your child encounters dangerous content.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="bg-white p-8 rounded-2xl shadow-sm border border-violet-100 text-left">
+                <div className="mb-4">{item.icon}</div>
+                <h4 className="font-bold text-slate-900 mb-2">{item.title}</h4>
+                <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-lg text-slate-600 leading-relaxed mt-10 max-w-3xl mx-auto">
+            Whether you are battling social media addiction, facing the threat of AI-generated
+            deepfakes, or struggling to protect your child from harmful content — the E-Village
+            provides the expert guidance you need, exactly when you need it.
+          </p>
         </div>
       </section>
 
       {/* Bio Section */}
-      <section className="py-24 bg-slate-50">
+      <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
-              <div className="bg-white p-2 rounded-[2.5rem] shadow-xl border border-white">
-                <div className="aspect-[4/5] bg-slate-200 rounded-[2rem] flex items-center justify-center relative overflow-hidden">
-                  <div className="text-center p-8 text-slate-400">
-                    <Users className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                    <p className="font-bold">Yetty Williams</p>
-                    <p className="text-xs uppercase tracking-widest">Digital Parenting Expert</p>
+              <div className="bg-violet-50 p-2 rounded-[2.5rem] shadow-xl border border-violet-100">
+                <div className="aspect-[4/5] bg-violet-100 rounded-[2rem] flex items-center justify-center relative overflow-hidden">
+                  <div className="text-center p-8 text-violet-300">
+                    <Users className="w-16 h-16 mx-auto mb-4 opacity-40" />
+                    <p className="font-bold text-violet-400">Yetty Williams</p>
+                    <p className="text-xs uppercase tracking-widest text-violet-300">Digital Parenting Expert</p>
                   </div>
                 </div>
-                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur p-6 rounded-2xl border border-slate-100 shadow-lg">
+                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur p-6 rounded-2xl border border-violet-100 shadow-lg">
                   <p className="font-black text-slate-900">Yetty Williams</p>
-                  <p className="text-xs text-slate-500 italic">Author of "Digital Savvy Parenting"</p>
+                  <p className="text-xs text-slate-500 italic">Author · Digital Savvy Parenting</p>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-8">
-              <h3 className="text-pink-600 font-black tracking-widest uppercase text-sm">
-                Expert Guidance
+            <div className="space-y-6">
+              <h3 className="font-black tracking-widest uppercase text-sm" style={{ color: BRAND }}>
+                Who is behind it?
               </h3>
               <h2 className="text-4xl font-black text-slate-900 leading-tight">
-                I am building the safety net your family deserves.
+                The E-Village is created by Yetty Williams.
               </h2>
               <p className="text-lg text-slate-600 leading-relaxed">
-                As a certified coach trained in <strong>cyberpsychology</strong>, I've spent a
-                decade training 7,000+ parents. Generic tools don't understand your culture or your
-                child's specific age. The E-Village changes that.
+                Yetty Williams is a leading expert in digital parenting, author of{' '}
+                <em>Digital Savvy Parenting: What the World Urgently Needs</em>, and the
+                award-winning founder of <strong>LagosMums</strong> — a global community reaching
+                millions.
               </p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                  <Brain className="w-8 h-8 text-pink-600 mb-4" />
-                  <h4 className="font-bold text-sm">Deep Insights</h4>
-                  <p className="text-xs text-slate-500">Evidence-based psychology.</p>
-                </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                  <ShieldCheck className="w-8 h-8 text-pink-600 mb-4" />
-                  <h4 className="font-bold text-sm">Real Protection</h4>
-                  <p className="text-xs text-slate-500">Real-time crisis support.</p>
-                </div>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                As a certified digital parenting coach trained in <strong>cyberpsychology</strong>{' '}
+                with over a decade of experience, Yetty has coached thousands of parents to navigate
+                the complexities of the digital age. Generic tools don't understand your culture or
+                your child's specific age. The E-Village changes that.
+              </p>
+              <div className="grid grid-cols-3 gap-4 pt-2">
+                {[
+                  { icon: <Brain className="w-6 h-6" style={{ color: BRAND }} />, label: 'Cyberpsychology' },
+                  { icon: <Globe className="w-6 h-6" style={{ color: BRAND }} />, label: 'Global Reach' },
+                  { icon: <Award className="w-6 h-6" style={{ color: BRAND }} />, label: 'Award-Winning' },
+                ].map((b) => (
+                  <div key={b.label} className="bg-violet-50 p-4 rounded-2xl border border-violet-100 text-center">
+                    <div className="flex justify-center mb-2">{b.icon}</div>
+                    <p className="text-xs font-bold text-slate-700">{b.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -270,11 +314,11 @@ const App = () => {
 
       {/* Waitlist Form */}
       <section id="waitlist-form" className="py-24 max-w-4xl mx-auto px-6">
-        <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-slate-50 space-y-10">
+        <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-violet-50 space-y-10">
           <div className="text-center space-y-2">
             <h2 className="text-3xl font-black text-slate-900">Join the E-Village</h2>
             <p className="text-slate-500">
-              Your information is secure and helps us personalize your experience.
+              Your information is secure and helps us personalise your experience.
             </p>
           </div>
 
@@ -291,7 +335,7 @@ const App = () => {
                 <input
                   required
                   type="text"
-                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-[#E91E63] outline-none"
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-violet-400 outline-none"
                   placeholder="First Name"
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
@@ -302,7 +346,7 @@ const App = () => {
                 <input
                   required
                   type="email"
-                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-[#E91E63] outline-none"
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-violet-400 outline-none"
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -316,7 +360,7 @@ const App = () => {
                 <MessageCircle className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                 <input
                   type="tel"
-                  className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-[#E91E63] outline-none"
+                  className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-violet-400 outline-none"
                   placeholder="Phone Number"
                   value={formData.whatsapp}
                   onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
@@ -339,15 +383,15 @@ const App = () => {
                     key={opt.key}
                     className={`flex items-start gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                       formData.hurdle === opt.key
-                        ? 'border-pink-600 bg-pink-50'
-                        : 'border-slate-50 bg-slate-50'
+                        ? 'border-violet-500 bg-violet-50'
+                        : 'border-slate-100 bg-slate-50'
                     }`}
                   >
                     <input
                       type="radio"
                       required
                       name="hurdle"
-                      className="mt-1 accent-pink-600"
+                      className="mt-1 accent-violet-600"
                       checked={formData.hurdle === opt.key}
                       onChange={() => setFormData({ ...formData, hurdle: opt.key })}
                     />
@@ -371,8 +415,8 @@ const App = () => {
                     onClick={() => setFormData({ ...formData, ageRange: age })}
                     className={`py-4 rounded-xl border-2 font-bold text-xs transition-all ${
                       formData.ageRange === age
-                        ? 'border-pink-600 bg-pink-50 text-pink-600'
-                        : 'border-slate-50 bg-slate-50 text-slate-500'
+                        ? 'border-violet-500 bg-violet-50 text-violet-700'
+                        : 'border-slate-100 bg-slate-50 text-slate-500'
                     }`}
                   >
                     {age}
@@ -392,8 +436,8 @@ const App = () => {
                     onClick={() => setFormData({ ...formData, location: loc })}
                     className={`flex-1 py-4 rounded-xl border-2 font-bold text-sm transition-all ${
                       formData.location === loc
-                        ? 'border-pink-600 bg-pink-50 text-pink-600'
-                        : 'border-slate-50 bg-slate-50 text-slate-500'
+                        ? 'border-violet-500 bg-violet-50 text-violet-700'
+                        : 'border-slate-100 bg-slate-50 text-slate-500'
                     }`}
                   >
                     {loc}
@@ -405,9 +449,8 @@ const App = () => {
             <button
               disabled={loading}
               type="submit"
-              className={`w-full py-6 rounded-[2rem] font-black text-xl text-white shadow-2xl transition-all flex items-center justify-center gap-3 ${
-                loading ? 'bg-slate-400' : 'bg-slate-900 hover:bg-pink-600 shadow-pink-100'
-              }`}
+              className="w-full py-6 rounded-[2rem] font-black text-xl text-white shadow-2xl transition-all flex items-center justify-center gap-3 hover:opacity-90 disabled:opacity-50"
+              style={{ backgroundColor: loading ? '#94a3b8' : BRAND }}
             >
               {loading ? 'Saving Spot...' : 'Secure My Spot'}
               {!loading && <ChevronRight className="w-6 h-6" />}
