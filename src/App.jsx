@@ -22,12 +22,14 @@ const supabase = createClient(
 );
 
 const MILESTONES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-const BRAND = '#7C3AED';
+const BRAND = '#6929C3';   // DSP purple
+const PINK  = '#E91E6E';   // DSP pink
+const BLUE  = '#5B8DE6';   // DSP blue
 
 function fireCelebration() {
   const duration = 4000;
   const end = Date.now() + duration;
-  const colors = [BRAND, '#a78bfa', '#fbbf24', '#34d399', '#60a5fa'];
+  const colors = [BRAND, PINK, BLUE, '#fbbf24', '#34d399'];
   const frame = () => {
     confetti({ particleCount: 6, angle: 60, spread: 70, origin: { x: 0 }, colors });
     confetti({ particleCount: 6, angle: 120, spread: 70, origin: { x: 1 }, colors });
@@ -160,8 +162,9 @@ const App = () => {
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-violet-200" style={{ backgroundColor: BRAND }}>
-              EV
+            <div className="flex gap-1">
+              <div className="w-5 h-5 rounded-md flex items-center justify-center text-white font-black text-[10px]" style={{ backgroundColor: BRAND }}>E</div>
+              <div className="w-5 h-5 rounded-md flex items-center justify-center text-white font-black text-[10px]" style={{ backgroundColor: BLUE }}>V</div>
             </div>
             <span className="font-black text-xl tracking-tight uppercase hidden sm:block text-slate-900">
               E-Village
@@ -170,7 +173,7 @@ const App = () => {
           <a
             href="#waitlist-form"
             className="text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg"
-            style={{ backgroundColor: BRAND }}
+            style={{ backgroundColor: PINK }}
           >
             Join Waitlist
           </a>
@@ -195,8 +198,8 @@ const App = () => {
           </p>
           <a
             href="#waitlist-form"
-            className="inline-block px-10 py-5 text-white rounded-3xl font-black text-lg hover:scale-105 transition-all shadow-2xl shadow-violet-200"
-            style={{ backgroundColor: BRAND }}
+            className="inline-block px-10 py-5 text-white rounded-3xl font-black text-lg hover:scale-105 transition-all shadow-2xl"
+            style={{ backgroundColor: PINK, boxShadow: `0 20px 40px ${PINK}40` }}
           >
             Secure Early Access
           </a>
@@ -229,19 +232,22 @@ const App = () => {
                 icon: <Brain className="w-8 h-8" style={{ color: BRAND }} />,
                 title: 'Social Media Addiction',
                 desc: 'Screen time battles and withdrawal from real-world connection.',
+                accent: BRAND,
               },
               {
-                icon: <ShieldCheck className="w-8 h-8" style={{ color: BRAND }} />,
+                icon: <ShieldCheck className="w-8 h-8" style={{ color: BLUE }} />,
                 title: 'AI Deepfakes & Safety',
                 desc: 'Cyberbullying, identity threats, and AI-generated harmful content.',
+                accent: BLUE,
               },
               {
-                icon: <Zap className="w-8 h-8" style={{ color: BRAND }} />,
+                icon: <Zap className="w-8 h-8" style={{ color: PINK }} />,
                 title: 'Harmful Exposure',
                 desc: 'Real-time action plans when your child encounters dangerous content.',
+                accent: PINK,
               },
             ].map((item) => (
-              <div key={item.title} className="bg-white p-8 rounded-2xl shadow-sm border border-violet-100 text-left">
+              <div key={item.title} className="bg-white p-8 rounded-2xl shadow-sm text-left" style={{ borderTop: `3px solid ${item.accent}`, border: `1px solid #f0f0f0`, borderTopWidth: '3px', borderTopColor: item.accent }}>
                 <div className="mb-4">{item.icon}</div>
                 <h4 className="font-bold text-slate-900 mb-2">{item.title}</h4>
                 <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
@@ -450,7 +456,7 @@ const App = () => {
               disabled={loading}
               type="submit"
               className="w-full py-6 rounded-[2rem] font-black text-xl text-white shadow-2xl transition-all flex items-center justify-center gap-3 hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: loading ? '#94a3b8' : BRAND }}
+              style={{ backgroundColor: loading ? '#94a3b8' : PINK }}
             >
               {loading ? 'Saving Spot...' : 'Secure My Spot'}
               {!loading && <ChevronRight className="w-6 h-6" />}
