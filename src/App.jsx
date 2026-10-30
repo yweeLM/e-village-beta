@@ -62,9 +62,16 @@ const App = () => {
       return;
     }
 
-    // Send welcome email (fire-and-forget — don't block the thank-you screen)
+    // Notify Yetty of new signup (fire-and-forget)
     supabase.functions.invoke('send-welcome-email', {
-      body: { first_name: formData.firstName, email: formData.email },
+      body: {
+        first_name: formData.firstName,
+        email: formData.email,
+        whatsapp: formData.whatsapp,
+        hurdle: formData.hurdle,
+        age_range: formData.ageRange,
+        location: formData.location,
+      },
     }).catch(console.error);
 
     setLoading(false);
