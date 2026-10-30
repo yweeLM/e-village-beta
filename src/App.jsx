@@ -55,14 +55,19 @@ const App = () => {
       source: 'web_waitlist',
     });
 
-    setLoading(false);
-
     if (insertError) {
       console.error('Submission error:', insertError);
+      setLoading(false);
       setError('Something went wrong. Please try again or check your connection.');
       return;
     }
 
+    // Send welcome email (fire-and-forget — don't block the thank-you screen)
+    supabase.functions.invoke('send-welcome-email', {
+      body: { first_name: formData.firstName, email: formData.email },
+    }).catch(console.error);
+
+    setLoading(false);
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
